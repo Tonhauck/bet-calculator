@@ -13,7 +13,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Prepare site
-        run: mkdir -p site && cp index.html site/ 2>/dev/null || true
+        run: mkdir -p site && cp index.html site/ && cp bet-calculator.html site/
       - name: Upload artifact
         id: deployment
         uses: actions/upload-pages-artifact@v3
