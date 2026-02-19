@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polymarket — Guide & Calculatrice de position</title>
+    <style>
+        :root {
+            --bg: #f5f5f7;
+            --surface: #ffffff;
+            --text: #1d1d1f;
+            --text-secondary: #6e6e73;
+            --border: rgba(0,0,0,0.08);
+            --blue: #0071e3;
+            --green: #34c759;
+            --red: #ff3b30;
+            --orange: #ff9f0a;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #1d1d1f;
+                --surface: #2d2d2f;
+                --text: #f5f5f7;
+                --text-secondary: #a1a1a6;
+                --border: rgba(255,255,255,0.1);
+            }
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            font-size: 15px;
+            line-height: 1.47;
+        }
+        .header {
+            padding: 24px 32px;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface);
+            width: 100%;
+        }
+        .header h1 { margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.02em; }
+        .header p { margin: 4px 0 0; font-size: 13px; color: var(--text-secondary); }
+        .main {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0;
+            width: 100%;
+            padding: 24px 32px 48px;
+            align-items: start;
+        }
+        .left-col {
+            flex: 1 1 400px;
+            min-width: 0;
+            max-width: 100%;
+        }
+        .right-col {
+            flex: 1 1 420px;
+            min-width: 0;
+            max-width: 100%;
+        }
+        .right-col .calc-section {
+            position: sticky;
+            top: 24px;
+        }
+        .prevention-block {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--blue);
+            border-radius: 8px;
+            padding: 20px 24px;
+            margin-bottom: 28px;
+        }
+        .prevention-block h3 { margin: 0 0 12px; font-size: 15px; font-weight: 600; color: var(--text); }
+        .prevention-block p { margin: 0 0 10px; font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
+        .prevention-block p:last-child { margin-bottom: 0; }
+        .guidelines-section { margin-bottom: 24px; }
+        .guidelines-section h2 { margin: 0 0 12px; font-size: 17px; font-weight: 600; }
+        .guidelines-section details { margin-bottom: 8px; }
+        .guidelines-section summary {
+            cursor: pointer;
+            padding: 12px 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+        .guidelines-section summary:hover { background: var(--bg); }
+        .guidelines-section .details-content {
+            padding: 16px 20px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.55;
+        }
+        .guidelines-section ul { margin: 8px 0 0 20px; padding: 0; }
+        .guidelines-section li { margin-bottom: 6px; }
+        .guidelines-section table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            font-size: 14px;
+        }
+        .guidelines-section th, .guidelines-section td {
+            border: 1px solid var(--border);
+            padding: 10px 12px;
+            text-align: left;
+        }
+        .guidelines-section th { background: var(--bg); font-weight: 600; color: var(--text); }
+        .calc-section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 0;
+            margin-left: 32px;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        .form-grid .form-row { margin-bottom: 0; }
+        @media (max-width: 900px) {
+            .main { flex-direction: column; }
+            .right-col .calc-section { margin-left: 0; margin-top: 28px; position: static; }
+        }
+        .calc-section h2 { margin: 0 0 20px; font-size: 18px; font-weight: 600; }
+        .form-row { margin-bottom: 16px; }
+        .form-row label { display: block; font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 6px; }
+        .form-row input, .form-row select {
+            width: 100%;
+            max-width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 14px;
+        }
+        .form-row input:focus, .form-row select:focus {
+            outline: none;
+            border-color: var(--blue);
+        }
+        .form-row .hint { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+        .wallet-display { font-size: 12px; color: var(--text-secondary); margin-top: 6px; }
+        .results-box {
+            margin-top: 24px;
+            padding: 20px;
+            background: var(--bg);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        .results-box h3 { margin: 0 0 12px; font-size: 14px; font-weight: 600; }
+        .results-box .row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px; }
+        .results-box .row:last-child { margin-bottom: 0; }
+        .results-box .label { color: var(--text-secondary); }
+        .results-box .value { font-weight: 500; color: var(--text); }
+        .results-box .value.positive { color: var(--green); }
+        .results-box .value.negative { color: var(--red); }
+        .results-box .value.warn { color: var(--orange); }
+        .error-msg { color: var(--red); font-size: 13px; margin-top: 8px; }
+        .calc-section.locked { display: none !important; }
+        .checklist-block {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-left: 32px;
+            margin-bottom: 24px;
+        }
+        .checklist-block h2 { margin: 0 0 16px; font-size: 18px; font-weight: 600; }
+        .checklist-block p.checklist-intro { font-size: 14px; color: var(--text-secondary); margin: 0 0 20px; line-height: 1.5; }
+        .checklist-item { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; cursor: pointer; }
+        .checklist-item:last-child { margin-bottom: 0; }
+        .checklist-item input[type="checkbox"] { margin-top: 3px; flex-shrink: 0; width: 18px; height: 18px; accent-color: var(--blue); cursor: pointer; }
+        .checklist-item label { font-size: 14px; color: var(--text); line-height: 1.5; cursor: pointer; flex: 1; }
+        .checklist-done { font-size: 14px; color: var(--green); font-weight: 500; margin-top: 16px; }
+        @media (max-width: 900px) {
+            .checklist-block { margin-left: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Polymarket — Guide & Calculatrice de position</h1>
+        <p>Stratégie, prévention émotionnelle et calcul de la mise recommandée.</p>
+    </div>
+
+    <div class="main">
+        <div class="left-col">
+        <div class="prevention-block">
+            <h3>Avant de miser</h3>
+            <p><strong>Lève la tête et regarde autour de toi :</strong> tu as une compagne fantastique, une belle vie, des gens qui comptent. Ce pari ne définit pas qui tu es.</p>
+            <p>Tu es sur le point de prendre une décision financière. Ton état actuel influence tes choix.</p>
+            <p>Si tu ressens une forte excitation, de la colère, ou l'envie de « rattraper » une perte ou d'« en remettre une », ferme l'onglet et reviens plus tard.</p>
+            <p>La calculatrice donne une taille de position suggérée, pas une obligation. Tu peux toujours miser moins, ou ne pas miser.</p>
+            <p>Ne jamais augmenter la mise parce que « c'est sûr » ou parce que tu as déjà perdu.</p>
+        </div>
+
+        <section class="guidelines-section">
+            <h2>Guidelines stratégiques</h2>
+            <details>
+                <summary>1. Guideline émotionnelle : le détachement radical</summary>
+                <div class="details-content">
+                    <p>Le plus grand piège sur Polymarket est le « pari de cœur » (souhaiter qu'un événement arrive plutôt que d'analyser sa probabilité réelle).</p>
+                    <ul>
+                        <li><strong>Tue ton biais de confirmation :</strong> Si tu paries sur la victoire d'un candidat ou d'un film aux Oscars, ne lis pas que les news qui vont dans ton sens. Cherche activement les arguments qui invalident ta position.</li>
+                        <li><strong>Accepte l'incertitude :</strong> Un marché à 90 % n'est pas une certitude, c'est un risque de 10 %. Si le « cygne noir » arrive, ne le prends pas personnellement. C'est le jeu.</li>
+                        <li><strong>La règle du « Check de Température » :</strong> Si tu ressens de la colère ou une excitation euphorique après un mouvement de prix, ferme l'onglet. On ne trade jamais en état d'alerte émotionnelle.</li>
+                    </ul>
+                </div>
+            </details>
+            <details>
+                <summary>2. Guideline psychologique : penser en probabilités</summary>
+                <div class="details-content">
+                    <p>Sur Polymarket, tu n'achètes pas un résultat, tu achètes une part de probabilité.</p>
+                    <ul>
+                        <li><strong>Value Betting uniquement :</strong> Ne demande pas « Qui va gagner ? », demande « Est-ce que la probabilité actuelle (le prix) est inférieure à la probabilité réelle ? ». Si le marché affiche 40 % ($0.40) mais que tes recherches indiquent 60 %, tu as une opportunité.</li>
+                        <li><strong>Évite le « Sunk Cost Fallacy » :</strong> Si de nouvelles infos tombent et que ton pari initial ne tient plus la route, sors de ta position, même à perte. Ne reste pas dans un navire qui coule en espérant un miracle.</li>
+                        <li><strong>Discipline de spécialisation :</strong> Ne parie pas sur tout (politique, sport, crypto, culture). Choisis une niche où tu es mieux informé que la moyenne.</li>
+                    </ul>
+                </div>
+            </details>
+            <details>
+                <summary>3. Guideline financière : la gestion du capital (Bankroll)</summary>
+                <div class="details-content">
+                    <p>C'est ici que 90 % des parieurs échouent. Sans gestion de risque, tu finiras à zéro, peu importe ton talent.</p>
+                    <ul>
+                        <li><strong>Le Critère de Kelly (modéré) :</strong> Ne mise jamais la totalité de ton capital sur un seul événement. Limite tes positions à 2–5 % de ta bankroll totale par pari.</li>
+                        <li><strong>Comprendre la liquidité :</strong> Sur Polymarket, entrer est facile, sortir peut être coûteux si le carnet d'ordres est vide. Vérifie toujours le spread avant de miser gros.</li>
+                        <li><strong>Le coût d'opportunité :</strong> Ton argent est bloqué jusqu'à la résolution du marché. Calcule ton ROI en fonction du temps.</li>
+                    </ul>
+                </div>
+            </details>
+            <details>
+                <summary>Tableau récap « Pro Trader »</summary>
+                <div class="details-content">
+                    <table>
+                        <thead>
+                            <tr><th>Aspect</th><th>Attitude perdante</th><th>Attitude gagnante</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><strong>Émotion</strong></td><td>Parie sur ce qu'il veut voir arriver.</td><td>Parie sur ce que les données prédisent.</td></tr>
+                            <tr><td><strong>Psychologie</strong></td><td>Cherche à avoir raison à tout prix.</td><td>Cherche à exploiter les erreurs de prix.</td></tr>
+                            <tr><td><strong>Finance</strong></td><td>Fait tapis (« All-in ») sur un coup sûr.</td><td>Diversifie et mise selon l'avantage calculé.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </details>
+        </section>
+        </div>
+        <div class="right-col">
+        <div class="checklist-block" id="checklistBlock">
+            <h2>Un instant avant de continuer</h2>
+            <p class="checklist-intro">Coche chaque point après l'avoir fait. La calculatrice apparaîtra quand la checklist sera complète.</p>
+            <div class="checklist-item">
+                <input type="checkbox" id="check1" aria-label="Ferme les yeux">
+                <label for="check1">Ferme les yeux.</label>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" id="check2" aria-label="Respire un bon coup">
+                <label for="check2">Respire un bon coup.</label>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" id="check3" aria-label="Regarde autour de toi">
+                <label for="check3">Regarde autour de toi et prends un moment : ce pari n'est rien. La vraie vie, c'est ce qu'il y a autour de toi.</label>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" id="check4" aria-label="Pas d'action revanche">
+                <label for="check4">Pas d'action revanche : souviens-toi de tes pertes passées (Trump, Voyager…). On ne mise pas pour « se refaire ».</label>
+            </div>
+            <div class="checklist-item">
+                <input type="checkbox" id="check5" aria-label="État émotionnel calme">
+                <label for="check5">Je ne suis ni dans l'excitation ni dans la colère. Je peux décider calmement.</label>
+            </div>
+            <p class="checklist-done" id="checklistDone" style="display: none;">Bien. Tu peux utiliser la calculatrice ci-dessous.</p>
+        </div>
+        <section class="calc-section locked" id="calcSection">
+            <h2>Calculatrice de position</h2>
+            <div class="form-grid">
+                <div class="form-row">
+                    <label for="bankroll">Bankroll ($)</label>
+                    <input type="number" id="bankroll" min="0" step="1" placeholder="ex. 500">
+                    <div id="walletDisplay" class="wallet-display"></div>
+                </div>
+                <div class="form-row">
+                    <label for="price">Prix du marché (0–100 %)</label>
+                    <input type="number" id="price" min="0" max="100" step="0.1" placeholder="ex. 5 pour 5¢">
+                </div>
+                <div class="form-row">
+                    <label for="prob">Prob. estimée (0–100 %, optionnel)</label>
+                    <input type="number" id="prob" min="0" max="100" step="0.1" placeholder="ex. 12">
+                    <div class="hint">Value bet / Kelly. Vide = rule-based seul.</div>
+                </div>
+                <div class="form-row">
+                    <label for="marketType">Type de marché</label>
+                    <select id="marketType">
+                        <option value="range">Range ou seuil</option>
+                        <option value="exact">Exact</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label for="method">Méthode de mise</label>
+                    <select id="method">
+                        <option value="rulebased">Rule-based (bot)</option>
+                        <option value="fixed">Fixée (2–5 %)</option>
+                        <option value="kelly_full">Kelly full</option>
+                        <option value="kelly_half">Kelly half</option>
+                        <option value="kelly_quarter">Kelly quarter</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <label for="fixedPct">Fixée : % bankroll</label>
+                    <select id="fixedPct">
+                        <option value="2">2 %</option>
+                        <option value="3">3 %</option>
+                        <option value="4">4 %</option>
+                        <option value="5">5 %</option>
+                    </select>
+                </div>
+            </div>
+            <div class="results-box" id="resultsBox" style="display: none;">
+                <h3>Résultats</h3>
+                <div id="resultsContent"></div>
+            </div>
+            <div id="calcError" class="error-msg"></div>
+        </section>
+        </div>
+    </div>
+
+    <script>
+(function() {
+    const bankrollEl = document.getElementById('bankroll');
+    const priceEl = document.getElementById('price');
+    const probEl = document.getElementById('prob');
+    const marketTypeEl = document.getElementById('marketType');
+    const methodEl = document.getElementById('method');
+    const fixedPctEl = document.getElementById('fixedPct');
+    const resultsBox = document.getElementById('resultsBox');
+    const resultsContent = document.getElementById('resultsContent');
+    const calcError = document.getElementById('calcError');
+    const walletDisplay = document.getElementById('walletDisplay');
+    const calcSection = document.getElementById('calcSection');
+    const checklistDone = document.getElementById('checklistDone');
+    const checklistIds = ['check1', 'check2', 'check3', 'check4', 'check5'];
+
+    function allChecklistChecked() {
+        return checklistIds.every(function(id) { return document.getElementById(id).checked; });
+    }
+
+    function updateCalculatorVisibility() {
+        if (allChecklistChecked()) {
+            calcSection.classList.remove('locked');
+            checklistDone.style.display = 'block';
+            if (bankrollEl.value && priceEl.value) runCalc();
+        } else {
+            calcSection.classList.add('locked');
+            checklistDone.style.display = 'none';
+        }
+    }
+
+    checklistIds.forEach(function(id) {
+        document.getElementById(id).addEventListener('change', updateCalculatorVisibility);
+    });
+
+    function parseNum(val, defaultVal) {
+        if (val === '' || val === null || val === undefined) return defaultVal;
+        const n = parseFloat(val);
+        return isNaN(n) ? defaultVal : n;
+    }
+
+    function readUrlParams() {
+        const params = new URLSearchParams(window.location.search);
+        const bankroll = params.get('bankroll');
+        const price = params.get('price');
+        const prob = params.get('prob');
+        const marketType = params.get('market_type');
+        if (bankroll != null) bankrollEl.value = bankroll;
+        if (price != null) {
+            const p = parseFloat(price);
+            priceEl.value = p <= 1 ? p * 100 : p;
+        }
+        if (prob != null) {
+            const pr = parseFloat(prob);
+            probEl.value = pr <= 1 ? pr * 100 : pr;
+        }
+        if (marketType === 'exact' || marketType === 'range') marketTypeEl.value = marketType;
+    }
+
+    function fetchBankroll() {
+        fetch('/api/bankroll').then(function(r) {
+            if (!r.ok) return;
+            return r.json();
+        }).then(function(data) {
+            if (data && typeof data.bankroll_usd === 'number' && data.bankroll_usd > 0) {
+                bankrollEl.value = String(data.bankroll_usd);
+                if (data.polymarket_wallet_address) {
+                    const addr = data.polymarket_wallet_address;
+                    const short = addr.length > 10 ? addr.slice(0, 6) + '\u2026' + addr.slice(-4) : addr;
+                    walletDisplay.textContent = 'Wallet: ' + short;
+                }
+                if (priceEl.value) runCalc();
+            }
+        }).catch(function() {}).finally(function() {
+            if (!bankrollEl.value || !bankrollEl.value.trim()) {
+                bankrollEl.value = '600';
+                if (priceEl.value) runCalc();
+            }
+        });
+    }
+
+    function ruleBasedPosition(priceCents, marketType, edgeCents, bankroll) {
+        var percent = 0;
+        if (priceCents >= 0 && priceCents <= 2) {
+            if (marketType === 'exact') percent = 0.5;
+            else percent = edgeCents > 5 ? 1.5 : 1.0;
+        } else if (priceCents >= 3 && priceCents <= 6) {
+            if (marketType === 'exact') percent = edgeCents > 5 ? 1.0 : 0.75;
+            else percent = edgeCents > 5 ? 2.0 : 1.5;
+        } else if (priceCents >= 7 && priceCents <= 10) {
+            if (marketType === 'exact') percent = 0.5;
+            else percent = edgeCents > 5 ? 1.5 : 1.0;
+        }
+        var amount = (bankroll * percent) / 100;
+        return { amount: amount, percent: percent, reason: percent === 0 ? 'Prix hors plage 0–10¢' : 'Rule-based: ' + percent + '% bankroll' };
+    }
+
+    function runCalc() {
+        calcError.textContent = '';
+        resultsBox.style.display = 'none';
+        var bankroll = parseNum(bankrollEl.value, 0);
+        var pricePct = parseNum(priceEl.value, 0);
+        var probPct = parseNum(probEl.value, null);
+        var price = pricePct / 100;
+        var prob = probPct != null ? probPct / 100 : null;
+        var marketType = marketTypeEl.value;
+        var method = methodEl.value;
+
+        if (bankroll <= 0) {
+            calcError.textContent = 'Saisis une bankroll strictement positive.';
+            return;
+        }
+        if (price <= 0 || price > 1) {
+            calcError.textContent = 'Prix doit être entre 0 et 100 %.';
+            return;
+        }
+        var priceCents = price * 100;
+        var edgeCents = prob != null ? (prob - price) * 100 : 0;
+        var amount = 0, percent = 0, reason = '';
+
+        if (method === 'fixed') {
+            percent = parseNum(fixedPctEl.value, 2);
+            amount = (bankroll * percent) / 100;
+            reason = 'Fixée: ' + percent + '% bankroll';
+        } else if (method === 'rulebased') {
+            var res = ruleBasedPosition(priceCents, marketType, edgeCents, bankroll);
+            amount = res.amount;
+            percent = res.percent;
+            reason = res.reason;
+        } else if (method.startsWith('kelly_') && prob != null && prob > price) {
+            var kellyF = (prob - price) / (1 - price);
+            if (kellyF <= 0 || !isFinite(kellyF)) kellyF = 0;
+            var fraction = method === 'kelly_full' ? 1 : method === 'kelly_half' ? 0.5 : 0.25;
+            kellyF *= fraction;
+            percent = Math.min(kellyF * 100, 5);
+            percent = Math.max(percent, 0);
+            amount = (bankroll * percent) / 100;
+            reason = 'Kelly ' + (fraction * 100) + '% (cap 5%)';
+        } else if (method.startsWith('kelly_')) {
+            if (prob == null) calcError.textContent = 'Pour Kelly, remplis la probabilité estimée.';
+            else if (prob <= price) calcError.textContent = 'Pas de value : probabilité estimée doit être supérieure au prix.';
+            return;
+        } else {
+            var res = ruleBasedPosition(priceCents, marketType, edgeCents, bankroll);
+            amount = res.amount;
+            percent = res.percent;
+            reason = res.reason;
+        }
+
+        var shares = price > 0 ? amount / price : 0;
+        var profitIfWin = amount > 0 && price > 0 ? shares * (1 - price) : 0;
+        var edge = prob != null ? (prob - price) * 100 : null;
+        var evPct = (prob != null && price > 0) ? ((prob / price) - 1) * 100 : null;
+
+        var html = '';
+        if (edge != null) {
+            html += '<div class="row"><span class="label">Edge (points)</span><span class="value ' + (edge >= 0 ? 'positive' : 'negative') + '">' + edge.toFixed(1) + '</span></div>';
+        }
+        if (evPct != null) {
+            html += '<div class="row"><span class="label">EV %</span><span class="value ' + (evPct >= 0 ? 'positive' : 'negative') + '">' + evPct.toFixed(1) + '%</span></div>';
+        }
+        html += '<div class="row"><span class="label">Position suggérée</span><span class="value">' + amount.toFixed(2) + ' $ (' + percent.toFixed(1) + ' % bankroll)</span></div>';
+        html += '<div class="row"><span class="label">Méthode</span><span class="value">' + reason + '</span></div>';
+        html += '<div class="row"><span class="label">Parts achetables</span><span class="value">' + (shares | 0) + '</span></div>';
+        html += '<div class="row"><span class="label">Profit si gain</span><span class="value">' + profitIfWin.toFixed(2) + ' $</span></div>';
+        resultsContent.innerHTML = html;
+        resultsBox.style.display = 'block';
+    }
+
+    document.getElementById('bankroll').addEventListener('input', runCalc);
+    document.getElementById('price').addEventListener('input', runCalc);
+    document.getElementById('prob').addEventListener('input', runCalc);
+    document.getElementById('marketType').addEventListener('change', runCalc);
+    document.getElementById('method').addEventListener('change', runCalc);
+    document.getElementById('fixedPct').addEventListener('change', runCalc);
+
+    readUrlParams();
+    fetchBankroll();
+    if (bankrollEl.value && priceEl.value) runCalc();
+})();
+    </script>
+</body>
+</html>
